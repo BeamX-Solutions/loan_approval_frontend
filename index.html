@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loan Approval Predictor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body class="bg-gray-100 flex justify-center items-center min-h-screen">
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState } = React;
+
+    const App = () => {
+      const [formData, setFormData] = useState({
+        Gender: "Male",
+        Married: "Yes",
+        Education: "Graduate",
+        Self_Employed: "No",
+        ApplicantIncome: 5000,
+        CoapplicantIncome: 2000,
+        LoanAmount: 150,
+        Loan_Amount_Term: 360,
+        Credit_History: "Good",
+        Property_Area: "Semiurban",
+      });
+      const [result, setResult] = useState(null);
+      const [error, setError] = useState(null);
+      const [loading, setLoading] = useState(false);
+
+      const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+      };
+
+      const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setError(null);
+        setResult(null);
+
+        // Map form data to API schema
+        const payload = {
+          Gender_Male: formData.Gender === "Male" ? 1 : 0,
+          Married_Yes: formData.Married === "Yes" ? 1 : 0,
+          Education_NotGraduate: formData.Education === "Not Graduate" ? 1 : 0,
+          Self_Employed_Yes: formData.Self_Employed === "Yes" ? 1 : 0,
+          ApplicantIncome: parseFloat(formData.ApplicantIncome),
+          CoapplicantIncome: parseFloat(formData.CoapplicantIncome),
+          LoanAmount: parseFloat(formData.LoanAmount),
+          Loan_Amount_Term: parseFloat(formData.Loan_Amount_Term),
+          Credit_History: formData.Credit_History === "Good" ? 1 : 0,
+          Property_Area_Semiurban: formData.Property_Area === "Semiurban" ? 1 : 0,
+          Property_Area_Urban: formData.Property_Area === "Urban" ? 1 : 0,
+        };
+
+        try {
+          const response = await axios.post(
+            "https://loan-approval-api-qj2x.onrender.com/predict",
+            payload,
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+              timeout: 60000, // 60 seconds for Render spin-up
+            }
+          );
+          setResult(response.data);
+        } catch (err) {
+          setError(err.response ? err.response.data.detail : "Request failed. Please try again.");
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      return (
+        <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+          <h1 className="text-2xl font-bold mb-6 text-center">Loan Approval Predictor</h1>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Gender</label>
+              <select
+                name="Gender"
+                value={formData.Gender}
+                onChange={handleChange}
+                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+              >
+                <option>Male</option>
+                <option>Female</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Married</label>
+              <select
+                name="Married"
+                value={formData.Married}
+                onChange={handleChange}
+                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+              >
+                <option>Yes</option>
+                <option>No</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Education</label>
+              <select
+                name="Education"
+                value={formData.Education}
+                onChange={handleChange}
+                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+              >
+                <option>Graduate</option>
+                <option>Not Graduate</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Self Employed</label>
+              <select
+                name="Self_Employed"
+                value={formData.Self_Employed}
+                onChange={handleChange}
+                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+              >
+                <option>No</option>
+                <option>Yes</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Applicant Income</label>
+              <input
+                type="number"
+                name="ApplicantIncome"
+                value={formData.ApplicantIncome}
+                onChange={handleChange}
+                min="0"
+                step="0.01"
+                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Coapplicant Income</label>
+              <input
+                type="number"
+                name="CoapplicantIncome"
+                value={formData.CoapplicantIncome}
+                onChange={handleChange}
+                min="0"
+                step="0.01"
+                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Loan Amount</label>
+              <input
+                type="number"
+                name="LoanAmount"
+                value={formData.LoanAmount}
+                onChange={handleChange}
+                min="0"
+                step="0.01"
+                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Loan Amount Term (months)</label>
+              <input
+                type="number"
+                name="Loan_Amount_Term"
+                value={formData.Loan_Amount_Term}
+                onChange={handleChange}
+                min="0"
+                step="1"
+                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Credit History</label>
+              <select
+                name="Credit_History"
+                value={formData.Credit_History}
+                onChange={handleChange}
+                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+              >
+                <option>Good</option>
+                <option>Bad</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Property Area</label>
+              <select
+                name="Property_Area"
+                value={formData.Property_Area}
+                onChange={handleChange}
+                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+              >
+                <option>Semiurban</option>
+                <option>Urban</option>
+                <option>Rural</option>
+              </select>
+            </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className={`w-full py-2 px-4 rounded-md text-white ${loading ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700'}`}
+            >
+              {loading ? 'Processing...' : 'Predict Loan Approval'}
+            </button>
+          </form>
+          {result && (
+            <div className="mt-6 p-4 bg-green-100 rounded-md">
+              <h2 className="text-lg font-semibold">
+                {result.approved ? 'Loan Approved' : 'Loan Denied'}
+              </h2>
+              <p>Approval Probability: {(result.approval_probability * 100).toFixed(2)}%</p>
+            </div>
+          )}
+          {error && (
+            <div className="mt-6 p-4 bg-red-100 rounded-md">
+              <h2 className="text-lg font-semibold">Error</h2>
+              <p>{error}</p>
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
+</body>
+</html>
