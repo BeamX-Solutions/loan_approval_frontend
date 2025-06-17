@@ -38,11 +38,14 @@
 
       const handleSubmit = async (e) => {
         e.preventDefault();
+        if (parseFloat(formData.ApplicantIncome) < 0 || parseFloat(formData.CoapplicantIncome) < 0 || parseFloat(formData.LoanAmount) < 0 || parseFloat(formData.Loan_Amount_Term) < 0) {
+          setError("All income and loan values must be non-negative.");
+          return;
+        }
         setLoading(true);
         setError(null);
         setResult(null);
 
-        // Map form data to API schema
         const payload = {
           Gender_Male: formData.Gender === "Male" ? 1 : 0,
           Married_Yes: formData.Married === "Yes" ? 1 : 0,
@@ -57,22 +60,40 @@
           Property_Area_Urban: formData.Property_Area === "Urban" ? 1 : 0,
         };
 
+        console.log("Sending payload:", payload);
+
         try {
           const response = await axios.post(
-            "https://loan-approval-api-qj2x.onrender.com/predict",
+            "https://loan-approval-api-11n8.onrender.com/predict",
             payload,
             {
               headers: {
                 "Content-Type": "application/json",
               },
-              timeout: 60000, // 60 seconds for Render spin-up
+              timeout: 90000,
             }
           );
           setResult(response.data);
         } catch (err) {
-          setError(err.response ? err.response.data.detail : "Request failed. Please try again.");
+          console.error("Request error:", err);
+          setError(
+            err.response
+              ? `Error ${err.response.status}: ${err.response.data.detail || "Unknown error"}`
+              : err.code === "ECONNABORTED"
+              ? "Request timed out. The server may be starting up. Please try again."
+              : "Request failed. Check your connection or server status."
+          );
         } finally {
           setLoading(false);
+        }
+      };
+
+      const wakeBackend = async () => {
+        try {
+          await axios.get("https://loan-approval-api-11n8.onrender.com/");
+          alert("Backend is awake!");
+        } catch {
+          alert("Failed to wake backend.");
         }
       };
 
@@ -205,6 +226,13 @@
                 <option>Rural</option>
               </select>
             </div>
+            <button
+              type="button"
+              onClick={wakeBackend}
+              className="w-full py-2 px-4 mt-2 rounded-md text-white bg-green-600 hover:bg-green-700"
+            >
+              Wake Backend
+            </button>
             <button
               type="submit"
               disabled={loading}
