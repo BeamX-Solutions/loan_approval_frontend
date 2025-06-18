@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Loan Approval Predictor</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -38,7 +38,12 @@
 
       const handleSubmit = async (e) => {
         e.preventDefault();
-        if (parseFloat(formData.ApplicantIncome) < 0 || parseFloat(formData.CoapplicantIncome) < 0 || parseFloat(formData.LoanAmount) < 0 || parseFloat(formData.Loan_Amount_Term) < 0) {
+        if (
+          parseFloat(formData.ApplicantIncome) < 0 ||
+          parseFloat(formData.CoapplicantIncome) < 0 ||
+          parseFloat(formData.LoanAmount) < 0 ||
+          parseFloat(formData.Loan_Amount_Term) < 0
+        ) {
           setError("All income and loan values must be non-negative.");
           return;
         }
@@ -59,8 +64,6 @@
           Property_Area_Semiurban: formData.Property_Area === "Semiurban" ? 1 : 0,
           Property_Area_Urban: formData.Property_Area === "Urban" ? 1 : 0,
         };
-
-        console.log("Sending payload:", payload);
 
         try {
           const response = await axios.post(
@@ -98,149 +101,110 @@
       };
 
       return (
-        <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+        <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-2xl">
           <h1 className="text-2xl font-bold mb-6 text-center">Loan Approval Predictor</h1>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Gender</label>
-              <select
-                name="Gender"
-                value={formData.Gender}
-                onChange={handleChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-              >
-                <option>Male</option>
-                <option>Female</option>
-              </select>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Gender</label>
+                <select name="Gender" value={formData.Gender} onChange={handleChange}
+                        className="mt-1 block w-full border border-gray-300 rounded-md p-2">
+                  <option>Male</option>
+                  <option>Female</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Married</label>
+                <select name="Married" value={formData.Married} onChange={handleChange}
+                        className="mt-1 block w-full border border-gray-300 rounded-md p-2">
+                  <option>Yes</option>
+                  <option>No</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Education</label>
+                <select name="Education" value={formData.Education} onChange={handleChange}
+                        className="mt-1 block w-full border border-gray-300 rounded-md p-2">
+                  <option>Graduate</option>
+                  <option>Not Graduate</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Self Employed</label>
+                <select name="Self_Employed" value={formData.Self_Employed} onChange={handleChange}
+                        className="mt-1 block w-full border border-gray-300 rounded-md p-2">
+                  <option>No</option>
+                  <option>Yes</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Credit History</label>
+                <select name="Credit_History" value={formData.Credit_History} onChange={handleChange}
+                        className="mt-1 block w-full border border-gray-300 rounded-md p-2">
+                  <option>Good</option>
+                  <option>Bad</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Property Area</label>
+                <select name="Property_Area" value={formData.Property_Area} onChange={handleChange}
+                        className="mt-1 block w-full border border-gray-300 rounded-md p-2">
+                  <option>Semiurban</option>
+                  <option>Urban</option>
+                  <option>Rural</option>
+                </select>
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Married</label>
-              <select
-                name="Married"
-                value={formData.Married}
-                onChange={handleChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-              >
-                <option>Yes</option>
-                <option>No</option>
-              </select>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Applicant Income <span className="text-xs text-gray-500">(USD)</span>
+                </label>
+                <input type="number" name="ApplicantIncome" value={formData.ApplicantIncome}
+                       onChange={handleChange} min="0" step="0.01"
+                       placeholder="e.g. 5000"
+                       className="mt-1 block w-full border border-gray-300 rounded-md p-2" required/>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Coapplicant Income <span className="text-xs text-gray-500">(USD)</span>
+                </label>
+                <input type="number" name="CoapplicantIncome" value={formData.CoapplicantIncome}
+                       onChange={handleChange} min="0" step="0.01"
+                       placeholder="e.g. 2000"
+                       className="mt-1 block w-full border border-gray-300 rounded-md p-2" required/>
+              </div>
+              <div className="sm:col-span-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Loan Amount <span className="text-xs text-gray-500">(in thousands USD)</span>
+                </label>
+                <input type="number" name="LoanAmount" value={formData.LoanAmount}
+                       onChange={handleChange} min="0" step="0.01"
+                       placeholder="e.g. 150 (means $150,000)"
+                       className="mt-1 block w-full border border-gray-300 rounded-md p-2" required/>
+              </div>
+              <div className="sm:col-span-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Loan Amount Term <span className="text-xs text-gray-500">(in months)</span>
+                </label>
+                <input type="number" name="Loan_Amount_Term" value={formData.Loan_Amount_Term}
+                       onChange={handleChange} min="0" step="1"
+                       placeholder="e.g. 360"
+                       className="mt-1 block w-full border border-gray-300 rounded-md p-2" required/>
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Education</label>
-              <select
-                name="Education"
-                value={formData.Education}
-                onChange={handleChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-              >
-                <option>Graduate</option>
-                <option>Not Graduate</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Self Employed</label>
-              <select
-                name="Self_Employed"
-                value={formData.Self_Employed}
-                onChange={handleChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-              >
-                <option>No</option>
-                <option>Yes</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Applicant Income</label>
-              <input
-                type="number"
-                name="ApplicantIncome"
-                value={formData.ApplicantIncome}
-                onChange={handleChange}
-                min="0"
-                step="0.01"
-                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Coapplicant Income</label>
-              <input
-                type="number"
-                name="CoapplicantIncome"
-                value={formData.CoapplicantIncome}
-                onChange={handleChange}
-                min="0"
-                step="0.01"
-                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Loan Amount</label>
-              <input
-                type="number"
-                name="LoanAmount"
-                value={formData.LoanAmount}
-                onChange={handleChange}
-                min="0"
-                step="0.01"
-                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Loan Amount Term (months)</label>
-              <input
-                type="number"
-                name="Loan_Amount_Term"
-                value={formData.Loan_Amount_Term}
-                onChange={handleChange}
-                min="0"
-                step="1"
-                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Credit History</label>
-              <select
-                name="Credit_History"
-                value={formData.Credit_History}
-                onChange={handleChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-              >
-                <option>Good</option>
-                <option>Bad</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Property Area</label>
-              <select
-                name="Property_Area"
-                value={formData.Property_Area}
-                onChange={handleChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-              >
-                <option>Semiurban</option>
-                <option>Urban</option>
-                <option>Rural</option>
-              </select>
-            </div>
-            <button
-              type="button"
-              onClick={wakeBackend}
-              className="w-full py-2 px-4 mt-2 rounded-md text-white bg-green-600 hover:bg-green-700"
-            >
+
+            <button type="button" onClick={wakeBackend}
+                    className="w-full py-2 px-4 mt-2 rounded-md text-white bg-green-600 hover:bg-green-700">
               Wake Backend
             </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className={`w-full py-2 px-4 rounded-md text-white ${loading ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700'}`}
-            >
+            <button type="submit" disabled={loading}
+                    className={`w-full py-2 px-4 rounded-md text-white ${loading ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700'}`}>
               {loading ? 'Processing...' : 'Predict Loan Approval'}
             </button>
           </form>
+
           {result && (
             <div className="mt-6 p-4 bg-green-100 rounded-md">
               <h2 className="text-lg font-semibold">
@@ -249,6 +213,7 @@
               <p>Approval Probability: {(result.approval_probability * 100).toFixed(2)}%</p>
             </div>
           )}
+
           {error && (
             <div className="mt-6 p-4 bg-red-100 rounded-md">
               <h2 className="text-lg font-semibold">Error</h2>
